@@ -20,6 +20,8 @@
         PlayScreenComp
         DebugScreenComp
 
+    THIS IS NOT REALLY A COMPONENT - REMOVE!!! IT IS A COLLECTION
+
 ******************************************************************************/
 
 // bj.ScreensComp class - holds all others
@@ -135,7 +137,7 @@ bj.BaseScreenComp.prototype.hide = function() {
 bj.BaseScreenComp.prototype.show = function() { 
     //this.setCss("visibility", "visible"); 
     var props = { "scaleX": 1, "scaleY": 1, "opacity": 1 };
-    this.animate(props, 500, 0);
+    this.animate(props, 250, 0);
 };
 
 

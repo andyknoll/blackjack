@@ -34,13 +34,12 @@ bj.App.prototype._createMvcObjects = function() {
 
 
 bj.App.prototype.run = function() {
-    this.views().appComp.scoreBoard.setProp("title", "Blackjack 2018")
 
     // prove that we can access components via the controller
     // var screenCtrl = this.ctrls().screenCompsCtrl;
     // alert(screenCtrl.debugComp().button0.infoAsText());
 
-    this.ctrls().appCtrl.run();
+    this.ctrls().gameCtrl.run();     // start the Game
 };
 
 
@@ -68,7 +67,19 @@ bj.Views = function(name, parent) {
     wood.Views.call(this, name, parent);
 	this._className = "bj.Views";
     // add the Blackjack views (now tree of UI components)
-	this.addComp(new bj.AppComp("appComp", this, "app-comp"));  // pass in root element
+    this.addComp(new bj.AppComp("appComp", this, "app-comp"));  // pass in root element
+    
+    
+    // add to the Views collection for debugging - not really necessary
+    this.addComp(this.appComp.scoreBoardComp);
+
+    // screensComp is really just a Collection - not a Comp
+    // this.addComp(this.appComp.screensComp);
+    this.addComp(this.appComp.screensComp.splashScreenComp);
+    this.addComp(this.appComp.screensComp.tableScreenComp);
+    this.addComp(this.appComp.screensComp.anteScreenComp);
+    this.addComp(this.appComp.screensComp.playScreenComp);
+    this.addComp(this.appComp.screensComp.debugScreenComp);
 }
 bj.Views.prototype = Object.create(wood.Views.prototype);
 bj.Views.prototype.constructor = bj.Views;
@@ -80,10 +91,11 @@ bj.Controllers = function(name, parent) {
     wood.Controllers.call(this, name, parent);
     this._className = "bj.Controllers";
     // add the various Blackjack controllers - not a tree structure
-	this.addController(new bj.AppCtrl("appCtrl", this));
+	//this.addController(new bj.AppCtrl("appCtrl", this));      // needed?
+	this.addController(new bj.GameCtrl("gameCtrl", this));
 	this.addController(new bj.GameCompsCtrl("gameCompsCtrl", this));
 	this.addController(new bj.ScreenCompsCtrl("screenCompsCtrl", this));
-	this.addController(new bj.ScoreboardCompsCtrl("scoreboardCtrl", this));
+	this.addController(new bj.ScoreBoardCompsCtrl("scoreBoardCtrl", this));
 }
 bj.Controllers.prototype = Object.create(wood.Controllers.prototype);
 bj.Controllers.prototype.constructor = bj.Controllers;

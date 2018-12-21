@@ -184,8 +184,8 @@ wood.CallbackObject.prototype.info = function() {
 
 // execute the callback method one time
 wood.CallbackObject.prototype.runCallback = function() {
-    if (!this.hasCaller()) return false;
-    if (!this.hasCallback()) return false;
+    if (!this._caller) return false;
+    if (!this._callback) return false;
     this._callback.call(this._caller, this);
     return true;
 };
@@ -194,8 +194,68 @@ wood.CallbackObject.prototype.runCallback = function() {
 
 
 
+
+
+
+// wood.Pauser
+// inherits from wood.CallbackObject
+// similar to TImer but uses setTimeout() not setInterval()
+wood.Pauser = function(name, parent) {
+    wood.CallbackObject.call(this, name, parent);
+    this._className = "wood.Pauser";
+
+	this._duration  = 1000;	        // mSecs
+    this._isStarted = false;
+};
+wood.Pauser.prototype = Object.create(wood.CallbackObject.prototype);
+wood.Pauser.prototype.constructor = wood.Pauser;
+
+// getters
+wood.Pauser.prototype.duration  = function() { return this._duration; };
+wood.Pauser.prototype.isStarted = function() { return this._isStarted; };
+
+// private internal method - called by setTimeout
+wood.Pauser.prototype._onTimer = function() {
+    this._isStarted = false;
+    this.runCallback();                      // once
+    this.triggerEvent(wood.event.TIMER);
+};
+
+
+// public methods
+wood.Pauser.prototype.info = function() {
+	var s = "";
+    s += wood.CallbackObject.prototype.info.call(this);
+	s += "duration: "  + this.duration()  + "<br>";
+	s += "isStarted: " + this.isStarted() + "<br>";
+	return s;
+};
+
+// setter
+wood.Pauser.prototype.setDuration = function(mSecs) {
+	if (mSecs < 0) mSecs = 0;
+	this._duration = mSecs;
+	
+	if (this._isStarted) {
+		this.start();                   // restart after setting
+	}
+};
+
+wood.Pauser.prototype.start = function() {
+    var self = this;	                // cache for anonymous function
+    
+    if (this._isStarted) return;	    // already started
+	this._isStarted = true;
+
+	setTimeout(function() {
+		self._onTimer();
+	}, self._duration);
+};
+
+
 // wood.Timer
 // inherits from wood.CallbackObject
+// TO DO: this could inherit from wood.Pauser!
 wood.Timer = function(name, parent) {
     wood.CallbackObject.call(this, name, parent);
     this._className = "wood.Timer";
@@ -203,7 +263,9 @@ wood.Timer = function(name, parent) {
 	this._timerId   = null;
 	this._cycle     = 0;
 	this._duration  = 1000;	        // mSecs
-	this._isStarted = false;
+    this._isStarted = false;
+    
+    this.isLooping = true;          // new 12-19-2018
 };
 wood.Timer.prototype = Object.create(wood.CallbackObject.prototype);
 wood.Timer.prototype.constructor = wood.Timer;
@@ -216,9 +278,11 @@ wood.Timer.prototype.isStarted = function() { return this._isStarted; };
 // private internal method - called by setInterval
 wood.Timer.prototype._onTimer = function() {
     //alert("wood.Timer.prototype._onTimer");
+    if (!this.isLooping) this.stop();
     this.runCallback();                      // every additional run until stopped
     this.triggerEvent(wood.event.TIMER);
     this._cycle++;                          // increment AFTER the trigger
+    //if (!this._isStarted) clearInterval(this._timerId);     // 12-19-2018
 };
 
 
@@ -229,6 +293,7 @@ wood.Timer.prototype.info = function() {
 	s += "duration: "  + this.duration()  + "<br>";
 	s += "cycle: "     + this.cycle()     + "<br>";
 	s += "isStarted: " + this.isStarted() + "<br>";
+	s += "isLooping: " + this.isLooping + "<br>";
 	return s;
 };
 
@@ -259,9 +324,10 @@ wood.Timer.prototype.stop = function() {
 	if (!this._isStarted) return;	    // already stopped
 	this._isStarted = false;
 	// leave _currCycle where it is until next start/resume
-	clearInterval(this._timerId);
+	clearInterval(this._timerId);    // NO! let callback complete
+    //this.runCallback();                      // every additional run until stopped
+    //this.triggerEvent(wood.event.TIMER);
 };
-
 
 
 

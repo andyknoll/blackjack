@@ -35,7 +35,7 @@ wood.ImageLoader.prototype.imageCount = function() { return this._images.length;
 
 // private methods
 
-// create an Image for each path entry
+// create an Image for each path entry - called by setPaths()
 wood.ImageLoader.prototype._createImages = function() {
     var count = this.pathCount();
     this._images = [];      // clear
@@ -54,7 +54,7 @@ wood.ImageLoader.prototype.setPaths = function(paths) {
         this._paths.push(relPath + paths[i]);
     }
     this._createImages();
-    this.loadImages();      // auto-load
+    //this.loadImages();      // auto-load?
 };
 
 wood.ImageLoader.prototype.createElement = function(id, parentElem) {

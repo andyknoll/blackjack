@@ -22,9 +22,11 @@
 ******************************************************************************/
 
 // wood.CardLoader class
-wood.CardLoader = function(name, parent) {
+// wood.CardLoader = function(name, parent) {
+wood.CardLoader = function(name, parent, relPath) {     // 12-20-2018 quick fix
     wood.CompLoader.call(this, name, parent);
     this._className = "wood.CardLoader";
+    this.relPath = relPath;
 
     // hard-code the image names in the /img folder
     var paths = [ 
@@ -218,6 +220,9 @@ wood.CardComponent.prototype.setCardImage = function(idx) {
     this.parent().setCompBackground(this, idx);
 };
 
+wood.CardComponent.prototype.setCardImageToBack = function() {
+    this.setCardImage(52);
+};
 
 
 // enforces correct H/W ratio

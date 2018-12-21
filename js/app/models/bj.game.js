@@ -36,10 +36,12 @@ bj.Game.prototype = Object.create(wood.Model.prototype);
 bj.Game.prototype.constructor = bj.Game;
 
 // getters
+bj.Game.prototype.currPlayerIdx = function() { return this.players.currIndex(); };
 bj.Game.prototype.currPlayer = function() { return this.players.currObject(); };
 bj.Game.prototype.player = function(idx) { return this.players.player(idx); };
 bj.Game.prototype.dealer = function() { return this.player(this.players.lastIndex()); };
 
+// used as a check in callback methods
 bj.Game.prototype.currPlayerIsDealer = function() { 
     return this.players.isLastObject();
 };
@@ -68,11 +70,11 @@ bj.Game.prototype.createPlayers = function() {
     player = new bj.Player("Vito", this.players);
     this.players.addPlayer(player);
 
-    player = new bj.Player("Michael", this.players);
+    player = new bj.Player("Andy", this.players);
     player.isAutoPlay = false;                  // set false for human player
     this.players.addPlayer(player);
 
-    player = new bj.Player("Sonny", this.players);
+    player = new bj.Player("Michael", this.players);
     this.players.addPlayer(player);
 
     player = new bj.Dealer("Mr. Dealer", this.players);
@@ -81,8 +83,6 @@ bj.Game.prototype.createPlayers = function() {
     this.players.createAndAddChips(10, 20);     // 10 chips * $20 = $200 
     this.players.first();
 };
-
-
 
 bj.Game.prototype.initMultiDeck = function() {
     this.multiDeck.setDeckCount(2);
@@ -94,10 +94,27 @@ bj.Game.prototype.initPlayers = function() {
     //this.players.player(2).nickname = "Michael";
 };
 
-// ???
+// static utility function - no prototype
+bj.Game.pauseThenCall = function(msecs, caller, func) {
+    setTimeout(() => { func.call(caller)}, msecs);  // keep in context
+};
+
+
+// ??? still using these?
 bj.Game.STOPPED = "STOPPED";
 bj.Game.STARTED = "STARTED";
 bj.Game.DEALING = "DEALING";
+/*
+SHUFFLING
+BETTING
+DEALING
+PLAYING
+SCORING
+RECONCILING
+COMPLETING
+*/
+
+
 
 
 // PUBLIC API
@@ -129,54 +146,58 @@ bj.Game.prototype.dealCardToCurrPlayer = function() {
 
 
 
-/*
-SHUFFLING
-BETTING
-DEALING
-PLAYING
-SCORING
-RECONCILING
-COMPLETING
-*/
-
 
 // called once
-bj.Game.prototype.initGame = function() {
+bj.Game.prototype.initGame = function(ctrl, callback) {
     this.msg = "Game.initGame";
-    this.setFirstPlayer();
+    if (!this.setFirstPlayer()) return false;
+    bj.Game.pauseThenCall(1000, ctrl, callback);
+    return true;
 };
 
 // called once
-bj.Game.prototype.initRounds = function() {
+bj.Game.prototype.initRounds = function(ctrl, callback) {
     this.msg = "Game.initRounds";
     this.setFirstPlayer();
+    bj.Game.pauseThenCall(1000, ctrl, callback);
 };
 
 // called once
-bj.Game.prototype.playRounds = function() {
+bj.Game.prototype.playRounds = function(ctrl, callback) {
     this.msg = "Game.playRounds";
     this.setFirstPlayer();
+    bj.Game.pauseThenCall(1000, ctrl, callback);
 };
 
-bj.Game.prototype.initRound = function() {
+// called once per round
+bj.Game.prototype.initRound = function(ctrl, callback) {
     this.msg = "Game.initRound";
     this.setFirstPlayer();
+    bj.Game.pauseThenCall(1000, ctrl, callback);
 };
 
-
-
-
-// these should each be called by event handlers!
-bj.Game.prototype.playRound = function() {
-    this.msg = "Game.playRound";
-    this.getNextPlayer();
-};
-
-bj.Game.prototype.shuffleDeck = function() {
+// called once per round
+bj.Game.prototype.shuffleDeck = function(ctrl, callback) {
     this.msg = "Game.shuffleDeck";
     this.multiDeck.shuffle();
+    bj.Game.pauseThenCall(2000, ctrl, callback);
 };
 
+bj.Game.prototype.playRound = function(ctrl, callback) {
+    this.msg = "Game.playRound";
+    //this.getNextPlayer(); // not yet...
+    bj.Game.pauseThenCall(2000, ctrl, callback);
+};
+
+// STOPPING HERE FOR NOW...
+
+// TO DO:
+// placeAntes()
+// dealFirstCards()
+// playPlayersHands()
+// scorePlayersHands()
+// reconcileBets()
+// completeRound()
 
 
 

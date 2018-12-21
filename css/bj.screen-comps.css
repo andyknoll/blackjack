@@ -10,6 +10,7 @@
   position: absolute;
   height: 50px;
   width: 250px;
+  width: 380px;
   font-size: 1rem;
   color: #eeeeee;
   background-color: #006600;
@@ -127,15 +128,16 @@
 
 #debug-screen {
   color: #000000;
-  background-color: #cccccc;
+  background-color: #003300;
   border: 0px solid black;
 }
 
 
 
 /* Table Screen */
+#button-instr    { top: 420px; left: 10px; }
 #button-settings { top: 480px; left: 10px; }
-#button-play { top: 540px; left: 10px; }
+#button-play     { top: 540px; left: 10px; }
 
 /* Ante Screen */
 #button-incr { top: 420px; left: 10px; }
@@ -156,7 +158,8 @@
   width: 870px;
   padding-left: 10px;
   overflow: auto;
-  background-color: #ffffff;
+  color: white;
+  background-color: #002200;
   border: 1px solid black;
 }
 

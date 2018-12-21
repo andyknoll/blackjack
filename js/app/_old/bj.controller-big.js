@@ -1,6 +1,6 @@
 /******************************************************************************
 
-	bj.controller.js
+	bj.controller-big.js
 	Andy Knoll
 	December 2018
     
@@ -21,158 +21,24 @@ bj.CtrlMain.prototype.constructor = bj.CtrlMain;
 bj.CtrlMain.prototype.game = function() { return this.models().game; };
 bj.CtrlMain.prototype.view = function() { return this.views().viewMain; };
 
-bj.CtrlMain.prototype.currPlayerIsDealer = function() { return this.game().currPlayerIsDealer(); };
-
-// convenience methods linked to viewMain
-bj.CtrlMain.prototype.log = function(s) {
-    this.view().log(s);
-};
-
-bj.CtrlMain.prototype.clearLog = function() {
-    this.view().clearLog();
-};
-
-
-
-bj.CtrlMain.prototype.init = function() {
-    var view = this.view();
-    view.$button0.on("click", this, this.buttonHandler);
-    view.$button1.on("click", this, this.buttonHandler);
-    view.$button2.on("click", this, this.buttonHandler);
-    view.$button3.on("click", this, this.buttonHandler);
-    view.$button4.on("click", this, this.buttonHandler);
-    view.$button5.on("click", this, this.buttonHandler);
-    
-    view.$button6.on("click",  this, this.buttonHandler);
-    view.$button7.on("click",  this, this.buttonHandler);
-    view.$button8.on("click",  this, this.buttonHandler);
-    view.$button9.on("click",  this, this.buttonHandler);
-    view.$button10.on("click", this, this.buttonHandler);
-    view.$button11.on("click", this, this.buttonHandler);
-
-    // attach the View game event handlers
-    view.addHandler(appname.ViewMain.INIT_GAME, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.INIT_ROUNDS, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.PLAY_ROUNDS, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.INIT_ROUND, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.PLAY_ROUND, this, this.gameHandler);
-
-    view.addHandler(appname.ViewMain.SHUFFLE_DECK, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.PLACE_BETS, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.PLACE_BET, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.PLACE_RANDOM_ANTE, this, this.gameHandler);
-    
-    view.addHandler(appname.ViewMain.DEAL_FIRST_CARDS, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.DEAL_PLAYER_CARD, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.PLAY_PLAYERS_HANDS, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.PLAY_PLAYER_HAND, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.PLAYER_HITTING, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.PLAYER_STAYING, this, this.gameHandler);
-    //view.addHandler(appname.ViewMain.PLAY_DEALER_HAND, this, this.gameHandler);
-
-    view.addHandler(appname.ViewMain.SCORE_PLAYERS_HANDS, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.SCORE_PLAYER_HAND, this, this.gameHandler);
-    view.addHandler(appname.ViewMain.SCORE_DEALER_HAND, this, this.gameHandler);    // ??
-    view.addHandler(appname.ViewMain.RECONCILE_BETS, this, this.gameHandler);
-    //view.addHandler(appname.ViewMain.RECONCILE_BET, this, this.gameHandler);
-
-    view.addHandler(appname.ViewMain.COMPLETE_ROUND, this, this.gameHandler);
-
-};
-
-// this converts the click handlers into true method calls
-bj.CtrlMain.prototype.buttonHandler = function(e) {
-    var $btn = $(e.target);
-    var ctrl = e.data;
-    var btnId = $btn.attr("id");
-
-    switch (btnId) {
-        case "button0"  : ctrl.button0click();  break;
-        case "button1"  : ctrl.button1click();  break;
-        case "button2"  : ctrl.button2click();  break;
-        case "button3"  : ctrl.button3click();  break;
-        case "button4"  : ctrl.button4click();  break;
-        case "button5"  : ctrl.button5click();  break;
-
-        case "button6"  : ctrl.button6click();  break;
-        case "button7"  : ctrl.button7click();  break;
-        case "button8"  : ctrl.button8click();  break;
-        case "button9"  : ctrl.button9click();  break;
-        case "button10" : ctrl.button10click(); break;
-        case "button11" : ctrl.button11click(); break;
-    }
-};
-
-// the click handlers are now true method calls
-bj.CtrlMain.prototype.button0click = function() {
-    //this.log("bj.CtrlMain.button0click");
-    this.clearLog();
-};
-
-bj.CtrlMain.prototype.button1click = function() {
-    //this.log("bj.CtrlMain.button1click");
-    this.log(this.app().info());
-};
-
-// game info
-bj.CtrlMain.prototype.button2click = function() {
-    this.log(this.game().info());
-};
-
-// start game
-bj.CtrlMain.prototype.button3click = function() {
-    this.startGame();
-};
-
-// players info
-bj.CtrlMain.prototype.button4click = function() {
-    var players = this.game().players;
-    for (var i = 0; i < players.count(); i++) {
-        this.log(players.player(i).info());
-    }
-};
-
-bj.CtrlMain.prototype.button5click = function() {
-};
-
-
-
-// ANTE +
-bj.CtrlMain.prototype.button6click = function() {
-    this.addChipToAnte();
-};
-
-// ANTE -
-bj.CtrlMain.prototype.button7click = function() {
-    this.removeChipFromAnte();
-};
-
-// ANTE OK - resume autoPlay
-bj.CtrlMain.prototype.button8click = function() {
-    //this.placeBet();
-    //this.game().getNextPlayer();
-    this.playerAntePlaced();
-};
-
-
-
-
-
-// HIT
-bj.CtrlMain.prototype.button9click = function() {
-    this.playerHit();
-};
-
-// STAY
-bj.CtrlMain.prototype.button10click = function() {
-    this.playerStay();
-};
-
-bj.CtrlMain.prototype.button11click = function() {
-};
-
 
 ///////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 bj.CtrlMain.prototype.startGame = function() {
     this.clearLog();
@@ -237,29 +103,6 @@ bj.CtrlMain.prototype.playRound = function() {
     this.log(this.game().msg);
     this.view().playRound(this.game());
     this.log("");
-
-    /*
-    this.shuffleDeck();
-    this.placeBets();
-    this.dealFirstCards();
-    this.playPlayersHands();
-    this.playDealerHand();
-    this.scorePlayersHands();
-    this.scoreDealerHand();
-    this.reconcileBets();
-    this.completeRound();
-    */
-};
-
-/*
-SHUFFLING
-BETTING
-DEALING
-PLAYING
-SCORING
-RECONCILING
-COMPLETING
-*/
 
 
 bj.CtrlMain.prototype.shuffleDeck = function() {
@@ -333,8 +176,6 @@ bj.CtrlMain.prototype.playerAntePlaced = function() {
 
 
 
-
-
 // DON'T FORGET THE isBroke() CHECK! CANNOT PLAY
 bj.CtrlMain.prototype.dealFirstCards = function() {
     //this.clearLog();
@@ -355,10 +196,6 @@ bj.CtrlMain.prototype.dealPlayerFirstCards = function() {
     this.view().dealPlayerFirstCards(this.game());
     //this.log("");
 };
-
-
-
-
 
 
 // NEED TO WAIT FOR INTERACTION
@@ -417,21 +254,6 @@ bj.CtrlMain.prototype.playPlayerHand = function() {
 };
 
 
-
-/*
-// NEED TO WAIT FOR INTERACTION
-bj.CtrlMain.prototype.playerBust = function() {
-    this.clearLog();
-    this.log("CtrlMain.playerBust");
-    this.game().playerBust();
-    this.log(this.game().msg);
-    this.view().playerBust(this.game());
-    this.log("");
-};
-*/
-
-
-
 bj.CtrlMain.prototype.scorePlayersHands = function() {
     this.log("");
     this.log("CtrlMain.scorePlayersHands");
@@ -468,39 +290,22 @@ bj.CtrlMain.prototype.completeRound = function() {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // this handles all the Game events triggered by the view when completed
-
-bj.CtrlMain.prototype.gameHandler = function(e) {
-    //alert("gameHandler")
-    var ctrl = e.data.receiver;
-
-    switch (e.type) {
-        case appname.ViewMain.INIT_GAME           : ctrl.initGameHandler();  break;
-        case appname.ViewMain.INIT_ROUNDS         : ctrl.initRoundsHandler();  break;
-        case appname.ViewMain.PLAY_ROUNDS         : ctrl.playRoundsHandler();  break;
-        case appname.ViewMain.INIT_ROUND          : ctrl.initRoundHandler();  break;
-        case appname.ViewMain.PLAY_ROUND          : ctrl.playRoundHandler();  break;
-
-        case appname.ViewMain.SHUFFLE_DECK        : ctrl.shuffleDeckHandler();  break;
-        case appname.ViewMain.PLACE_BETS          : ctrl.placeBetsHandler();  break;
-        case appname.ViewMain.PLACE_BET           : ctrl.placeBetHandler();  break;
-        case appname.ViewMain.PLACE_RANDOM_ANTE   : ctrl.placeRandomAnteHandler();  break;
-        case appname.ViewMain.DEAL_FIRST_CARDS    : ctrl.dealFirstCardsHandler();  break;
-        case appname.ViewMain.DEAL_PLAYER_CARD    : ctrl.dealPlayerCardHandler();  break;
-
-        case appname.ViewMain.PLAY_PLAYERS_HANDS  : ctrl.playPlayersHandsHandler();  break;
-        case appname.ViewMain.PLAY_PLAYER_HAND    : ctrl.playPlayerHandHandler();  break;
-        case appname.ViewMain.PLAYER_HITTING      : ctrl.playerHittingHandler();  break;
-        case appname.ViewMain.PLAYER_STAYING      : ctrl.playerStayingHandler();  break;
-        //case appname.ViewMain.PLAY_DEALER_HAND    : ctrl.playDealerHandHandler();  break;
-
-        case appname.ViewMain.SCORE_PLAYERS_HANDS : ctrl.scorePlayersHandsHandler();  break;
-        case appname.ViewMain.SCORE_PLAYER_HAND   : ctrl.scorePlayerHandHandler();  break;
-        //case appname.ViewMain.SCORE_DEALER_HAND   : ctrl.scoreDealerHandHandler();  break;
-        case appname.ViewMain.RECONCILE_BETS      : ctrl.reconcileBetsHandler();  break;
-        case appname.ViewMain.COMPLETE_ROUND      : ctrl.completeRoundHandler();  break;
-    }
-};
 
 bj.CtrlMain.prototype.initGameHandler = function() {
     //alert("CtrlMain.initGameHandler");
